@@ -1,9 +1,11 @@
 const { DataTypes } = require("sequelize")
 const sequelize = require("../../config/sequelize")
+const Company = require("./Company")
 const ItemType = require("./ItemType")
+const Category = require("./Category")
 
-const Category = sequelize.define(
-  "Category",
+const Item = sequelize.define(
+  "Item",
   {
     id: {
       type: DataTypes.UUID,
@@ -15,6 +17,15 @@ const Category = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
+    companyId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      field: "company_id",
+      references: {
+        model: Company,
+        key: "id"
+      }
+    },
     itemTypeId: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -24,11 +35,20 @@ const Category = sequelize.define(
         key: "id"
       }
     },
+    categoryId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      field: "category_id",
+      references: {
+        model: Category,
+        key: "id"
+      }
+    },
     description: {
       type: DataTypes.STRING,
       allowNull: true
     },
-    logo: {
+    image: {
       type: DataTypes.STRING,
       allowNull: true
     },
@@ -75,10 +95,10 @@ const Category = sequelize.define(
     },
   },
   {
-    tableName: "category",
+    tableName: "item",
     freezeTableName: true,
     timestamps: false
   }
 )
 
-module.exports = Category
+module.exports = Item

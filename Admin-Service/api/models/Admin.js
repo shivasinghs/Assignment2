@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize")
 const sequelize = require("../../config/sequelize")
+const { ADMIN_ROLES } = require("../../config/constants");
 
 const Admin = sequelize.define("Admin", {
   id: {
@@ -30,7 +31,7 @@ const Admin = sequelize.define("Admin", {
     allowNull: true,
   },
   role: {
-    type: DataTypes.ENUM("super_admin", "sub_admin"),
+    type: DataTypes.ENUM(...Object.values(ADMIN_ROLES)),
     allowNull: false,
   },
   isActive: {

@@ -22,6 +22,12 @@ const HTTP_STATUS_CODE = {
 
 const TOKEN_EXPIRY = "2h";
 
+const ADMIN_ROLES = {
+  SUPER_ADMIN: "super_admin",
+  SUB_ADMIN: "sub_admin"
+};
+
+
 module.exports = {
     JWT,
     uuidv4,
@@ -34,4 +40,5 @@ module.exports = {
     FS,
     MULTER,
     NODEMAILER,
+    ADMIN_ROLES,
 };

@@ -1,39 +1,36 @@
 const { DataTypes } = require("sequelize")
 const sequelize = require("../../config/sequelize")
+const ItemType = require("./ItemType")
 
-const ItemModule = sequelize.define("ItemModule", {
+const Category = sequelize.define(
+  "Category",
+  {
     id: {
-    type: DataTypes.UUID,
-    primaryKey: true,
-    defaultValue: DataTypes.UUIDV4, 
-    allowNull: false,
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      field: "user_id",
+      allowNull: false
     },
     itemTypeId: {
       type: DataTypes.UUID,
       allowNull: false,
       field: "item_type_id",
-    },
-    categoryId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      field: "category_id",
+      references: {
+        model: ItemType,
+        key: "id"
+      }
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     },
-    image: {
+    logo: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -52,7 +49,7 @@ const ItemModule = sequelize.define("ItemModule", {
       allowNull: true
     },
     updatedAt: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       field: "updated_at",
       allowNull: true
     },
@@ -72,14 +69,16 @@ const ItemModule = sequelize.define("ItemModule", {
       allowNull: true
     },
     deletedAt: {
-      type: DataTypes.DATE,
-      field: "deleted_at",
-      allowNull: true
-    }
-  }, {
-    tableName: "item_module",
+      type: DataTypes.BIGINT,
+      field: 'deleted_at',
+      allowNull: true,
+    },
+  },
+  {
+    tableName: "category",
     freezeTableName: true,
-    timestamps: false,
-  });
+    timestamps: false
+  }
+)
 
-  module.exports = ItemModule;
+module.exports = Category

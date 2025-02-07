@@ -1,8 +1,14 @@
 const User = require("./User")
-const ItemModule = require("./ItemModule")
+const BusinessType = require('./BusinessType')
+const ItemType = require('./ItemType')
+const Category = require('./Category')
+const Item = require("./Item")
 
 
 module.exports = {
   User,
-  ItemModule
+  BusinessType,
+  ItemType,
+  Category,
+  Item,
 }

@@ -22,16 +22,22 @@ const HTTP_STATUS_CODE = {
 
 const TOKEN_EXPIRY = "1h";
 
+const USER_ROLES = {
+  OWNER: "owner",
+  EMPLOYEE: "employee"
+};
+
 module.exports = {
-    JWT,
-    uuidv4,
-    VALIDATOR,
-    BCRYPT,
-    Op,
-    HTTP_STATUS_CODE,
-    TOKEN_EXPIRY,
-    PATH,
-    FS,
-    MULTER,
-    NODEMAILER,
+  JWT,
+  uuidv4,
+  VALIDATOR,
+  BCRYPT,
+  Op,
+  HTTP_STATUS_CODE,
+  TOKEN_EXPIRY,
+  PATH,
+  FS,
+  MULTER,
+  NODEMAILER,
+  USER_ROLES 
 };

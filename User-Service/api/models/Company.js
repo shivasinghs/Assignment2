@@ -1,9 +1,9 @@
 const { DataTypes } = require("sequelize")
 const sequelize = require("../../config/sequelize")
-const ItemType = require("./ItemType")
+const User = require('./User')
 
-const Category = sequelize.define(
-  "Category",
+const Company = sequelize.define(
+  "Company",
   {
     id: {
       type: DataTypes.UUID,
@@ -13,24 +13,21 @@ const Category = sequelize.define(
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false
-    },
-    itemTypeId: {
-      type: DataTypes.UUID,
       allowNull: false,
-      field: "item_type_id",
-      references: {
-        model: ItemType,
-        key: "id"
-      }
+      unique: true
     },
     description: {
       type: DataTypes.STRING,
       allowNull: true
     },
-    logo: {
-      type: DataTypes.STRING,
-      allowNull: true
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      field: "user_id",
+      references: {
+        model: User, 
+        key: 'id',
+      },
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -75,10 +72,10 @@ const Category = sequelize.define(
     },
   },
   {
-    tableName: "category",
+    tableName: "company",
     freezeTableName: true,
     timestamps: false
   }
 )
 
-module.exports = Category
+module.exports = Company
