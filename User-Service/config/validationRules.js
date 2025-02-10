@@ -1,4 +1,4 @@
-const { USER_ROLES } = require("./constants");
+const { USER_ROLES, ADMIN_ROLES } = require("./constants");
 
 const commonRules = {
   password: 'required|string|regex:/^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,16}$/',
@@ -8,7 +8,7 @@ const commonRules = {
 const validationRules = {
   User: {
     name: "required|string|max:64",
-    email: "required|email|unique",
+    email: "required|email",
     password: commonRules.password,
     gender: "required|string|in:Male,Female,Other",
     role: `required|string|in:${Object.values(USER_ROLES).join(",")}`,
@@ -20,34 +20,35 @@ const validationRules = {
   },
 
   BusinessType: {
-    name: "required|string|max:64|unique",
+    id: "required|string",
+    name: "required|string|max:64",
+  },
+
+  ItemType: {
+    id: "required|string",
+    name: "required|string|max:64",
+    description: "string|max:255",
   },
 
   Category: {
-    name: "required|string|max:64|unique",
+    id: "required|string",
+    itemTypeId : "required|string",
+    name: "required|string|max:64",
     itemTypeId: "required|string",
     description: "string|max:255",
-    logo: "string|url",
   },
 
   Company: {
-    name: "required|string|max:64|unique",
+    name: "required|string|max:64",
     description: "string|max:500",
-    userId: "required|string",
   },
 
   Item: {
-    name: "required|string|max:64|unique",
+    name: "required|string|max:64",
     companyId: "required|string",
     itemTypeId: "required|string",
     categoryId: "required|string",
     description: "string|string",
-    image: "string",
-  },
-
-  ItemType: {
-    name: "required|string|max:64|unique",
-    description: "string|max:255",
   },
 };
 
