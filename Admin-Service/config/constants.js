@@ -27,6 +27,10 @@ const ADMIN_ROLES = {
   SUB_ADMIN: "sub_admin"
 };
 
+const USER_ROLES = {
+  OWNER: "owner",
+  EMPLOYEE: "employee"
+};
 
 module.exports = {
     JWT,
@@ -41,4 +45,5 @@ module.exports = {
     MULTER,
     NODEMAILER,
     ADMIN_ROLES,
+    USER_ROLES,
 };

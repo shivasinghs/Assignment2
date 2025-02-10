@@ -20,13 +20,13 @@ sequelize
     console.error('Unable to connect to the database:', err);
   });
 
-  sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log("Database synchronized successfully!")
-  })
-  .catch((error) => {
-    console.error("Error during synchronization:", error.message,error)
-  })
+  // sequelize
+  // .sync({ force: false })
+  // .then(() => {
+  //   console.log("Database synchronized successfully!")
+  // })
+  // .catch((error) => {
+  //   console.error("Error during synchronization:", error.message,error)
+  // })
 
 module.exports = sequelize;

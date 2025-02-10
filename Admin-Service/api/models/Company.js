@@ -20,15 +20,6 @@ const Company = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true
     },
-    userId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      field: "user_id",
-      references: {
-        model: User, 
-        key: 'id',
-      },
-    },
     isActive: {
       type: DataTypes.BOOLEAN,
       field: "is_active",
