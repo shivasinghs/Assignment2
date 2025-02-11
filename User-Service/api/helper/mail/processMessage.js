@@ -5,32 +5,20 @@ const processMessage = (type) => {
   let attachments = [];
 
   switch (type) {
-    case 'signup':
+    case 'account-verification':
       subject = 'Welcome to our platform!';
-      attachments = [
-        {
-                filename: "signup.jpeg",
-                path: PATH.join(__dirname, "../../../public/assets/images/signup.jpeg"),
-                cid: "signup"
-              },
-              {
-                filename: "usersignup.jpeg",
-                path: PATH.join(__dirname, "../../../public/assets/images/usersignup.jpeg")
-              }
-      ];
+      attachments = [];
       break;
 
-    case 'reset-your-password':
+    case 'otp-for-resetting-your-password':
       subject = 'Reset Your Password';
-      attachments = [
-        {
-                filename: "download.jpeg",
-                path: PATH.join(__dirname, "../../../public/assets/images/download.jpeg"),
-                cid: "img1"
-              }
-      ];
+      attachments = [];
       break;
 
+      case 'create-employee':
+      subject = 'You have been added as an Employee ';
+      attachments = [];
+      break;
     default:
       console.warn(`No specific configuration for email type: ${type}`);
   }
@@ -39,3 +27,4 @@ const processMessage = (type) => {
 };
 
 module.exports = processMessage;
+

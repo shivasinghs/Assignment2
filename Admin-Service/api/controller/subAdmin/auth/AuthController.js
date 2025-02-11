@@ -2,6 +2,7 @@ const { Admin } = require("../../../models/index");
 const { generateToken } = require("../../../helper/auth/generateJWTToken");
 const { HTTP_STATUS_CODE, BCRYPT, VALIDATOR, TOKEN_EXPIRY, ADMIN_ROLES } = require("../../../../config/constants");
 const validationRules = require("../../../../config/validationRules");
+const client = require("../../../../config/redis")
 
 const subAdminLogin = async (req, res) => {
   try {
@@ -70,6 +71,8 @@ const subAdminLogin = async (req, res) => {
       { adminId: subAdmin.id, email: subAdmin.email, role: ADMIN_ROLES.SUB_ADMIN },
       TOKEN_EXPIRY
     );
+
+    await client.set(subAdmin.id.toString(), token);
 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,

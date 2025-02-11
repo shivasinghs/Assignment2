@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize")
 const sequelize = require("../../config/sequelize")
-const User = require('./User')
 
 const Company = sequelize.define(
   "Company",
@@ -20,14 +19,14 @@ const Company = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true
     },
-    userId: {
+    logo: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    ownerId: {
       type: DataTypes.UUID,
       allowNull: false,
-      field: "user_id",
-      references: {
-        model: User, 
-        key: 'id',
-      },
+      field: "owner_id"
     },
     isActive: {
       type: DataTypes.BOOLEAN,

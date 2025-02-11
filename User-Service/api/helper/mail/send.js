@@ -2,7 +2,7 @@ const transporter = require('../../../config/nodemailer')
 const processMessage = require('./processMessage')
 const processTemplate = require('./processTemplate')
 
-const sendEmail = async (to, type,templateName, payload) => {
+const sendEmail = async (from,to, type,templateName, payload) => {
   try {
 
     const { subject, attachments } = processMessage(type);
@@ -11,7 +11,7 @@ const sendEmail = async (to, type,templateName, payload) => {
     if (!html) throw new Error('Template processing failed');
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM,
+      from,
       to,
       subject,
       html,

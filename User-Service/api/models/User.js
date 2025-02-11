@@ -38,7 +38,7 @@ const User = sequelize.define("User", {
   },
   businessTypeId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
     field: 'business_type_id',
     references: {
       model: BusinessType, 
@@ -54,17 +54,11 @@ const User = sequelize.define("User", {
       key: 'id',
     },
   },
-  companyName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    field: 'company_name'
-  },
-  companyDescription: {
+  profileImage: {
     type: DataTypes.STRING,
     allowNull: true,
-    field:'company_description'
-  },
+    field: 'profile_image'
+  }, 
   isVerified: {
     type: DataTypes.BOOLEAN,
     field: 'is_verified',

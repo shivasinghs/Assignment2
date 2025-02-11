@@ -15,7 +15,7 @@ const authenticateUser = async (req, res, next) => {
 
     const decoded = JWT.verify(token, process.env.JWT_SECRET);
 
-    const admin = await Admin.findOne({ where: { id: decoded.adminId }, attributes: ["id", "role","email"] });
+    const admin = await Admin.findOne({ where: { id: decoded.adminId,isActive : true, isDeleted: false}, attributes: ["id", "role","email"] });
 
     if (!admin) {
       return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({

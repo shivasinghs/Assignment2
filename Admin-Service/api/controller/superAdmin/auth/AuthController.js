@@ -2,6 +2,7 @@ const { Admin } = require("../../../models/index");
 const { generateToken } = require("../../../helper/auth/generateJWTToken");
 const { HTTP_STATUS_CODE, BCRYPT, Op, VALIDATOR, TOKEN_EXPIRY, ADMIN_ROLES } = require("../../../../config/constants");
 const validationRules = require("../../../../config/validationRules");
+const client = require("../../../../config/redis")
 
 const superAdminLogin = async (req, res) => {
   try {
@@ -67,6 +68,8 @@ const superAdminLogin = async (req, res) => {
     }
 
     const token = generateToken({ adminId: admin.id, email: admin.email, role: ADMIN_ROLES.SUPER_ADMIN }, TOKEN_EXPIRY);
+
+    await client.set(admin.id.toString(), token);
 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,

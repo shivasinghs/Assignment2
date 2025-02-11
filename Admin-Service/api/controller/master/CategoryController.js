@@ -219,6 +219,7 @@ const deleteCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
     const admin = req.admin;
+    
 
     const validation = new VALIDATOR(req.params, {
       categoryId: validationRules.Category.id,

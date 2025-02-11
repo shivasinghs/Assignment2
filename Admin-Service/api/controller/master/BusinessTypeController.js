@@ -1,5 +1,5 @@
-const { BusinessType } = require("../../models/index");
-const { HTTP_STATUS_CODE, ADMIN_ROLES, VALIDATOR,Op } = require("../../../config/constants");
+const { BusinessType,Admin } = require("../../models/index");
+const { HTTP_STATUS_CODE, VALIDATOR,Op } = require("../../../config/constants");
 const validationRules = require("../../../config/validationRules");
 const sequelize = require('../../../config/sequelize')
 
@@ -7,7 +7,7 @@ const createBusinessType = async (req, res) => {
   try {
     const { name } = req.body;
     const admin = req.admin;
-
+    
     const validation = new VALIDATOR(req.body, {
       name: validationRules.BusinessType.name,
     });
@@ -98,7 +98,7 @@ const updateBusinessType = async (req, res) => {
     try {
       const { businessTypeId, name } = req.body;
       const admin = req.admin;
-  
+    
       const validation = new VALIDATOR(req.body, {
         businessTypeId: validationRules.BusinessType.id,
         name: validationRules.BusinessType.name,
@@ -166,6 +166,7 @@ const deleteBusinessType = async (req, res) => {
   try {
     const { businessTypeId } = req.params;
     const admin = req.admin;
+    
 
     const validation = new VALIDATOR(req.params, {
         businessTypeId: validationRules.BusinessType.id,
@@ -213,7 +214,7 @@ const deleteBusinessType = async (req, res) => {
 };
 
 const getAllBusinessTypes = async (req, res) => {
-    try {
+    try {  
       const page = parseInt(req.query.page, 10) || 1;
       const pageSize = parseInt(req.query.limit, 10) || 10;
       const offset = (page - 1) * pageSize;

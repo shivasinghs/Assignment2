@@ -12,6 +12,5 @@ function generateToken(payload, expiresIn) {
   }
 }
 
-module.exports = {
-  generateToken
-}
+module.exports =  generateToken
+
