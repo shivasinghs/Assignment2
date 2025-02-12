@@ -67,9 +67,9 @@ const superAdminLogin = async (req, res) => {
       });
     }
 
-    const token = generateToken({ adminId: admin.id, email: admin.email, role: ADMIN_ROLES.SUPER_ADMIN }, TOKEN_EXPIRY);
+    const token = generateToken({ id: admin.id, email: admin.email, role: ADMIN_ROLES.SUPER_ADMIN }, TOKEN_EXPIRY);
 
-    await client.set(admin.id.toString(), token);
+    await client.setEx(admin.id.toString(), TOKEN_EXPIRY, token);
 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,

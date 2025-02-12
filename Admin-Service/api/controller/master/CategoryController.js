@@ -21,6 +21,7 @@ const createCategory = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
+        data : "",
         err: validation.errors.all()
       });
     }
@@ -34,6 +35,8 @@ const createCategory = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Category already exists.",
+          data : "",
+          error: ""
         });
       }
 
@@ -44,7 +47,9 @@ const createCategory = async (req, res) => {
         deleteImage(logo.path);  
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
-          message: "Invalid logo. Only PNG, JPEG, JPG allowed & max size 2MB."
+          message: "Invalid logo. Only PNG, JPEG, JPG allowed & max size 2MB.",
+          data : "",
+          error : ""
         });
       }
       logoPath = baseUrl + logo.filename;  
@@ -63,14 +68,16 @@ const createCategory = async (req, res) => {
       message: "Category created successfully.",
       data: {
         categoryId: newCategory.id
-      }
+      },
+      error: "",
     });
   } catch (error) {
     console.error("Error in createCategory:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message
+      data : "",
+      error: error.message
     });
   }
 };
@@ -87,7 +94,8 @@ const getCategoryById = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Invalid input.",
-          err: validation.errors.all(),
+          data : "",
+          error: validation.errors.all(),
         });
       }
   
@@ -100,6 +108,8 @@ const getCategoryById = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
           status: HTTP_STATUS_CODE.NOT_FOUND,
           message: "Category not found.",
+          data : "",
+          error : ""
         });
       }
   
@@ -107,13 +117,15 @@ const getCategoryById = async (req, res) => {
         status: HTTP_STATUS_CODE.OK,
         message: "Category details retrieved successfully.",
         data: category,
+        error : ""
       });
     } catch (error) {
       console.error("Error in getCategoryById:", error);
       return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
         status: HTTP_STATUS_CODE.SERVER_ERROR,
         message: "Internal server error.",
-        err: error.message,
+        data : "",
+        error: error.message,
       });
     }
   };
@@ -135,7 +147,8 @@ const updateCategory = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Invalid input.",
-          err: validation.errors.all()
+          data : "",
+          error: validation.errors.all()
         });
       }
 
@@ -152,6 +165,8 @@ const updateCategory = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Category with this name already exists.",
+          data : "",
+          error : "",
         });
       }
   
@@ -164,7 +179,8 @@ const updateCategory = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
           status: HTTP_STATUS_CODE.NOT_FOUND,
           message: "Category not found.",
-          err: null
+          data : "",
+          error: null
         });
       }
   
@@ -176,7 +192,9 @@ const updateCategory = async (req, res) => {
           deleteImage(logo.path);  
           return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
             status: HTTP_STATUS_CODE.BAD_REQUEST,
-            message: "Invalid logo. Only PNG, JPEG, JPG allowed & max size 2MB."
+            message: "Invalid logo. Only PNG, JPEG, JPG allowed & max size 2MB.",
+            data : "",
+            error : ""
           });
         }
   
@@ -202,14 +220,16 @@ const updateCategory = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.OK).json({
         status: HTTP_STATUS_CODE.OK,
         message: "Category updated successfully.",
-        data: { categoryId }
+        data: { categoryId },
+        error : "",
       });
     } catch (error) {
       console.error("Error in updateCategory:", error);
       return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
         status: HTTP_STATUS_CODE.SERVER_ERROR,
         message: "Internal server error.",
-        err: error.message
+        data : "",
+        error: error.message
       });
     }
   };
@@ -229,7 +249,8 @@ const deleteCategory = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data : "",
+        error: validation.errors.all(),
       });
     }
 
@@ -242,6 +263,8 @@ const deleteCategory = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Category not found.",
+        data : "",
+        error : ""
       });
     }
 
@@ -254,13 +277,16 @@ const deleteCategory = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
       message: "Category deleted successfully.",
+      data : "",
+      error : "",
     });
   } catch (error) {
     console.error("Error in deleteCategory:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data : "",
+      error: error.message,
     });
   }
 };
@@ -290,7 +316,7 @@ const getAllCategories = async (req, res) => {
           status: HTTP_STATUS_CODE.NOT_FOUND,
           message: "No Categories found.",
           data: [],
-          err: null,
+          error: null,
         });
       }
   
@@ -314,14 +340,15 @@ const getAllCategories = async (req, res) => {
           total: totalCategories,
           categories,
         },
-        err: null,
+        error: null,
       });
     } catch (error) {
       console.error("Error in getAllCategories:", error);
       return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
         status: HTTP_STATUS_CODE.SERVER_ERROR,
         message: "Internal server error.",
-        err: error.message,
+        data : "",
+        error: error.message,
       });
     }
   };

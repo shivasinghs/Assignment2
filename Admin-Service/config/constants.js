@@ -20,7 +20,7 @@ const HTTP_STATUS_CODE = {
     SERVER_ERROR: 500,
   };
 
-const TOKEN_EXPIRY = "2h";
+const TOKEN_EXPIRY = 60 * 60;
 
 const ADMIN_ROLES = {
   SUPER_ADMIN: "super_admin",

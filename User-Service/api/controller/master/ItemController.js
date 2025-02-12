@@ -79,7 +79,6 @@ const createItem = async (req, res) => {
     }
 };
 
-
 const getItemById = async (req, res) => {
     try {
         const { itemId } = req.params;
@@ -93,33 +92,53 @@ const getItemById = async (req, res) => {
             return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
                 status: HTTP_STATUS_CODE.BAD_REQUEST,
                 message: "Invalid input.",
-                err: validation.errors.all(),
+                data: null,
+                error: validation.errors.all(),
             });
         }
 
-        const item = await Item.findOne({
-            where: { id: itemId, isDeleted: false, companyId: user.companyId }, 
-            attributes: ["name", "description", "image", "itemTypeId", "categoryId","companyId", "createdBy"],
+        const query = `
+            SELECT 
+                i.id AS "itemId", i.name AS "itemName", i.description AS "itemDescription", i.image AS "itemImage",
+                i.item_type_id AS "itemTypeId", it.name AS "itemTypeName",
+                i.category_id AS "categoryId", c.name AS "categoryName",
+                i.company_id AS "companyId",
+                i.created_by AS "createdBy"
+            FROM item i
+            JOIN company cmp ON i.company_id = cmp.id AND cmp.is_deleted = false
+            JOIN item_type it ON i.item_type_id = it.id AND it.is_deleted = false
+            JOIN category c ON i.category_id = c.id AND c.is_deleted = false
+            WHERE i.id = :itemId AND i.is_deleted = false AND i.company_id = :companyId AND i.is_Active = true
+        `;
+
+        const items = await sequelize.query(query, {
+            replacements: { itemId, companyId: user.companyId },
+            type: sequelize.QueryTypes.SELECT,
+            raw: true,
         });
 
-        if (!item) {
+        if (items.length === 0) {
             return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
                 status: HTTP_STATUS_CODE.NOT_FOUND,
                 message: "Item not found in your company.",
+                data: null,
+                error: null,
             });
         }
 
         return res.status(HTTP_STATUS_CODE.OK).json({
             status: HTTP_STATUS_CODE.OK,
             message: "Item details retrieved successfully.",
-            data: item,
+            data: items[0],
+            error: null,
         });
     } catch (error) {
         console.error("Error in getItemById:", error);
         return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
             status: HTTP_STATUS_CODE.SERVER_ERROR,
             message: "Internal server error.",
-            err: error.message,
+            data: null,
+            error: error.message,
         });
     }
 };
@@ -153,6 +172,7 @@ const updateItem = async (req, res) => {
                 name: { [Op.iLike]: name },
                 id: { [Op.ne]: itemId },
                 isDeleted: false,
+                isActive : true,
                 companyId: user.companyId
             },
             attributes: ["id"],
@@ -277,17 +297,23 @@ const deleteItem = async (req, res) => {
 const getAllItems = async (req, res) => {
     try {
         const user = req.user;
-
         const page = parseInt(req.query.page, 10) || 1;
         const pageSize = parseInt(req.query.limit, 10) || 10;
         const offset = (page - 1) * pageSize;
 
         const query = `
-          SELECT id, name, description, image, item_type_id, category_id
-          FROM item
-          WHERE is_deleted = false AND company_id = :companyId
-          ORDER BY created_at ASC
-          LIMIT :limit OFFSET :offset
+            SELECT 
+                i.id, i.name, i.description, i.image, 
+                i.item_type_id AS "itemTypeId", it.name AS "itemTypeName",
+                i.category_id AS "categoryId", c.name AS "categoryName",
+                i.company_id AS "companyId"
+            FROM item i
+            JOIN item_type it ON i.item_type_id = it.id AND it.is_deleted = false
+            JOIN category c ON i.category_id = c.id AND c.is_deleted = false
+            JOIN company cmp ON i.company_id = cmp.id AND cmp.is_deleted = false
+            WHERE i.is_deleted = false AND i.company_id = :companyId AND i.is_Active = true
+            ORDER BY i.created_at ASC
+            LIMIT :limit OFFSET :offset
         `;
 
         const items = await sequelize.query(query, {
@@ -296,19 +322,10 @@ const getAllItems = async (req, res) => {
             raw: true,
         });
 
-        if (items.length === 0) {
-            return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
-                status: HTTP_STATUS_CODE.NOT_FOUND,
-                message: "No items found in your company.",
-                data: [],
-                err: null,
-            });
-        }
-
         const countQuery = `
-          SELECT COUNT(*) AS totalItems
-          FROM item
-          WHERE is_deleted = false AND company_id = :companyId
+            SELECT COUNT(*) AS "totalItems"
+            FROM item
+            WHERE is_deleted = false AND company_id = :companyId
         `;
 
         const countResult = await sequelize.query(countQuery, {
@@ -317,23 +334,21 @@ const getAllItems = async (req, res) => {
             raw: true,
         });
 
-        const totalItems = Number(countResult[0]?.totalitems) || 0;
+        const totalItems = Number(countResult[0]?.totalItems) || 0;
 
         return res.status(HTTP_STATUS_CODE.OK).json({
             status: HTTP_STATUS_CODE.OK,
-            message: "Items retrieved successfully.",
-            data: {
-                total: totalItems,
-                items,
-            },
-            err: null,
+            message: totalItems > 0 ? "Items retrieved successfully." : "No items found in your company.",
+            data: totalItems > 0 ? { total: totalItems, items } : null,
+            error: null,
         });
     } catch (error) {
         console.error("Error in getAllItems:", error);
         return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
             status: HTTP_STATUS_CODE.SERVER_ERROR,
             message: "Internal server error.",
-            err: error.message,
+            data: null,
+            error: error.message,
         });
     }
 };

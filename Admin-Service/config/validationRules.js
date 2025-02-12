@@ -7,6 +7,7 @@ const commonRules = {
 
 const validationRules = {
   User: {
+    id: "required|string",
     name: "required|string|max:64",
     email: "required|email",
     password: commonRules.password,
@@ -48,11 +49,13 @@ const validationRules = {
   },
 
   Company: {
+    id: "required|string",
     name: "required|string|max:64",
     description: "string|max:500",
   },
 
   Item: {
+    id: "required|string",
     name: "required|string|max:64",
     companyId: "required|string",
     itemTypeId: "required|string",

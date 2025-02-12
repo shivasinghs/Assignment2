@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Item Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+        .logo {
+            max-width: 150px;
+        }
+        .summary {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .count {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2D89FF;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{logo}}" alt="Company Logo" class="logo">
+            <h2>Daily Item Summary</h2>
+        </div>
+        <div class="summary">
+            <p>Hello {{ownerName}},</p>
+            <p>In the last 24 hours, your company <strong>{{companyName}}</strong> has added:</p>
+            <p class="count">{{itemCount}} New Items</p>
+        </div>
+        <div class="footer">
+            <p>Thank you for using our platform!</p>
+            <p>&copy; {{currentYear}} Your Company Name. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

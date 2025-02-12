@@ -211,7 +211,7 @@ const login = async (req, res) => {
     }
     const token = generateJWTToken({ id: user.id, email }, TOKEN_EXPIRY);
 
-     await client.set(user.id.toString(), token);
+    await client.setEx(user.id.toString(), TOKEN_EXPIRY, token);
     
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,

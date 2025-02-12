@@ -20,7 +20,7 @@ const HTTP_STATUS_CODE = {
     SERVER_ERROR: 500,
   };
 
-const TOKEN_EXPIRY = "1h";
+const TOKEN_EXPIRY = 60 * 60;
 
 const USER_ROLES = {
   OWNER: "owner",

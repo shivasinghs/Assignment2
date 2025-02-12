@@ -16,7 +16,8 @@ const createBusinessType = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data : "",
+        error: validation.errors.all(),
       });
     }
 
@@ -28,6 +29,8 @@ const createBusinessType = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Business Type already exists.",
+        data : "",
+        error: ""
       });
     }
 
@@ -40,13 +43,15 @@ const createBusinessType = async (req, res) => {
       status: HTTP_STATUS_CODE.CREATED,
       message: "Business Type created successfully.",
       data: { businessTypeId: newBusinessType.id },
+      error: "",
     });
   } catch (error) {
     console.error("Error in createBusinessType:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data : "",
+      error: error.message,
     });
   }
 };
@@ -63,7 +68,8 @@ const getBusinessTypeById = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data : "",
+        error: validation.errors.all(),
       });
     }
 
@@ -76,6 +82,8 @@ const getBusinessTypeById = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Business Type not found.",
+        data : "",
+        error : ""
       });
     }
 
@@ -83,13 +91,15 @@ const getBusinessTypeById = async (req, res) => {
       status: HTTP_STATUS_CODE.OK,
       message: "Business Type details retrieved successfully.",
       data: businessType,
+      error : ""
     });
   } catch (error) {
     console.error("Error in getBusinessTypeById:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data : "",
+      error: error.message,
     });
   }
 };
@@ -108,7 +118,8 @@ const updateBusinessType = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Invalid input.",
-          err: validation.errors.all(),
+          data : "",
+          error: validation.errors.all(),
         });
       }
 
@@ -125,6 +136,8 @@ const updateBusinessType = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Business Type with this name already exists.",
+          data : "",
+          error : ""
         });
       }
 
@@ -137,6 +150,8 @@ const updateBusinessType = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
           status: HTTP_STATUS_CODE.NOT_FOUND,
           message: "Business Type not found.",
+          data : "",
+          error : ""
         });
       }
   
@@ -150,13 +165,15 @@ const updateBusinessType = async (req, res) => {
         status: HTTP_STATUS_CODE.OK,
         message: "Business Type updated successfully.",
         data: { businessTypeId: businessTypeId },
+        error : ""
       });
     } catch (error) {
       console.error("Error in updateBusinessType:", error);
       return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
         status: HTTP_STATUS_CODE.SERVER_ERROR,
         message: "Internal server error.",
-        err: error.message,
+        data : "",
+        error: error.message,
       });
     }
   };
@@ -176,7 +193,8 @@ const deleteBusinessType = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Invalid input.",
-          err: validation.errors.all(),
+          data : "",
+          error: validation.errors.all(),
         });
       }
 
@@ -189,6 +207,8 @@ const deleteBusinessType = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Business Type not found.",
+        data : "",
+        error : ""
       });
     }
 
@@ -202,13 +222,14 @@ const deleteBusinessType = async (req, res) => {
       status: HTTP_STATUS_CODE.OK,
       message: "Business Type deleted successfully.",
       data: {businessTypeId: businessTypeId },
+      error : ""
     });
   } catch (error) {
     console.error("Error in deleteBusinessType:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      error: error.message,
     });
   }
 };
@@ -238,7 +259,7 @@ const getAllBusinessTypes = async (req, res) => {
           status: HTTP_STATUS_CODE.NOT_FOUND,
           message: "No Business Types found.",
           data: [],
-          err: null,
+          error: null,
         });
       }
   
@@ -262,7 +283,7 @@ const getAllBusinessTypes = async (req, res) => {
           total: totalBusinessTypes,
           businessTypes,
         },
-        err: null,
+        error: null,
       });
     } catch (error) {
       console.error("Error in getAllBusinessTypes:", error);

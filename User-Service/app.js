@@ -5,6 +5,7 @@ try {
   const {corsOptions} = require("./config/security");
   const route = require('./config/route');
   const sequelize = require('./config/sequelize')
+  const sendItemCount = require('./api/controller/owner/master/ItemCountMailController')
 
 
   const app = express();
@@ -23,6 +24,9 @@ try {
     console.error("Error during synchronization:", error.message,error)
   })
   
+//sendItemCount()
+
+
   app.get("/", (req, res) => {
     res.send("Hello from the backend!");
   });

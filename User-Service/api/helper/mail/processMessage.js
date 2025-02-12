@@ -19,6 +19,11 @@ const processMessage = (type) => {
       subject = 'You have been added as an Employee ';
       attachments = [];
       break;
+
+      case 'item-count-to-owner':
+      subject = 'List Of Items Created Today';
+      attachments = [];
+      break;
     default:
       console.warn(`No specific configuration for email type: ${type}`);
   }

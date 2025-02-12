@@ -17,7 +17,8 @@ const createItemType = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data : "",
+        error: validation.errors.all(),
       });
     }
 
@@ -30,6 +31,8 @@ const createItemType = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Item Type already exists.",
+        data : "",
+        error : ""
       });
     }
 
@@ -43,13 +46,15 @@ const createItemType = async (req, res) => {
       status: HTTP_STATUS_CODE.CREATED,
       message: "Item Type created successfully.",
       data: { itemTypeId: newItemType.id },
+      error : ""
     });
   } catch (error) {
     console.error("Error in createItemType:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data : "",
+      error: error.message,
     });
   }
 };
@@ -66,7 +71,8 @@ const getItemTypeById = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data : "",
+        error: validation.errors.all(),
       });
     }
 
@@ -79,6 +85,8 @@ const getItemTypeById = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Item Type not found.",
+        data : "",
+        error :""
       });
     }
 
@@ -86,13 +94,15 @@ const getItemTypeById = async (req, res) => {
       status: HTTP_STATUS_CODE.OK,
       message: "Item Type details retrieved successfully.",
       data: itemType,
+      error : ""
     });
   } catch (error) {
     console.error("Error in getItemTypeById:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data : "",
+      error: error.message,
     });
   }
 };
@@ -112,7 +122,8 @@ const updateItemType = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data : "",
+        error: validation.errors.all(),
       });
     }
 
@@ -129,6 +140,8 @@ const updateItemType = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Item Type with this name already exists.",
+          data : "",
+          error : ""
         });
       }
 
@@ -141,6 +154,8 @@ const updateItemType = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Item Type not found.",
+        data : "",
+        error : ""
       });
     }
 
@@ -155,13 +170,15 @@ const updateItemType = async (req, res) => {
       status: HTTP_STATUS_CODE.OK,
       message: "Item Type updated successfully.",
       data: { itemTypeId },
+      error : ""
     });
   } catch (error) {
     console.error("Error in updateItemType:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data : "",
+      error: error.message,
     });
   }
 };
@@ -179,7 +196,8 @@ const deleteItemType = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Invalid input.",
-          err: validation.errors.all(),
+           data : "",
+          error: validation.errors.all(),
         });
       }
 
@@ -192,6 +210,8 @@ const deleteItemType = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Item Type not found.",
+         data : "",
+        error : ""
       });
     }
 
@@ -204,13 +224,16 @@ const deleteItemType = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
       message: "Item Type deleted successfully.",
+       data : "",
+       error : ""
     });
   } catch (error) {
     console.error("Error in deleteItemType:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+       data : "",
+      error: error.message,
     });
   }
 };
@@ -240,7 +263,7 @@ const getAllItemTypes = async (req, res) => {
                 status: HTTP_STATUS_CODE.NOT_FOUND,
                 message: "No Item Types found.",
                 data: [],
-                err: null,
+                error: null,
             });
         }
 
@@ -264,14 +287,15 @@ const getAllItemTypes = async (req, res) => {
                 total: totalItemTypes,
                 itemTypes,
             },
-            err: null,
+            error: null,
         });
     } catch (error) {
         console.error("Error in getAllItemTypes:", error);
         return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
             status: HTTP_STATUS_CODE.SERVER_ERROR,
             message: "Internal server error.",
-            err: error.message,
+             data : "",
+            error: error.message,
         });
     }
 };

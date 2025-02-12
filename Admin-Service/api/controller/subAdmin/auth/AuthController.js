@@ -68,11 +68,11 @@ const subAdminLogin = async (req, res) => {
     }
 
     const token = generateToken(
-      { adminId: subAdmin.id, email: subAdmin.email, role: ADMIN_ROLES.SUB_ADMIN },
+      { id: subAdmin.id, email: subAdmin.email, role: ADMIN_ROLES.SUB_ADMIN },
       TOKEN_EXPIRY
     );
 
-    await client.set(subAdmin.id.toString(), token);
+    await client.setEx(subAdmin.id.toString(), TOKEN_EXPIRY, token);
 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
