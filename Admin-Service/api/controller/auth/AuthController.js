@@ -1,10 +1,10 @@
-const { Admin } = require("../../../models/index");
-const { generateToken } = require("../../../helper/auth/generateJWTToken");
-const { HTTP_STATUS_CODE, BCRYPT, VALIDATOR, TOKEN_EXPIRY, ADMIN_ROLES } = require("../../../../config/constants");
-const validationRules = require("../../../../config/validationRules");
-const client = require("../../../../config/redis")
+const { Admin } = require("../../models/index");
+const { generateToken } = require("../../helper/auth/generateJWTToken");
+const { HTTP_STATUS_CODE, BCRYPT, VALIDATOR, TOKEN_EXPIRY, ADMIN_ROLES,Op } = require("../../../config/constants");
+const validationRules = require("../../../config/validationRules");
+const client = require("../../../config/redis");
 
-const subAdminLogin = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -22,15 +22,15 @@ const subAdminLogin = async (req, res) => {
       });
     }
 
-    const subAdmin = await Admin.findOne({
+    const admin = await Admin.findOne({
       where: {
         email: email,
-        role: ADMIN_ROLES.SUB_ADMIN
+        role: { [Op.in]: [ADMIN_ROLES.SUPER_ADMIN, ADMIN_ROLES.SUB_ADMIN] }
       },
-      attributes: ["id", "password", "isDeleted", "isActive"]
+      attributes: ["id", "password", "role", "isDeleted", "isActive"]
     });
 
-    if (!subAdmin) {
+    if (!admin) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid credentials.",
@@ -39,7 +39,7 @@ const subAdminLogin = async (req, res) => {
       });
     }
 
-    if (subAdmin.isDeleted) {
+    if (admin.isDeleted) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Admin not found.",
@@ -48,7 +48,7 @@ const subAdminLogin = async (req, res) => {
       });
     }
 
-    if (!subAdmin.isActive) {
+    if (!admin.isActive) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Account is inactive.",
@@ -57,7 +57,7 @@ const subAdminLogin = async (req, res) => {
       });
     }
 
-    const isPasswordValid = await BCRYPT.compare(password, subAdmin.password);
+    const isPasswordValid = await BCRYPT.compare(password, admin.password);
     if (!isPasswordValid) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
@@ -67,21 +67,18 @@ const subAdminLogin = async (req, res) => {
       });
     }
 
-    const token = generateToken(
-      { id: subAdmin.id, email: subAdmin.email, role: ADMIN_ROLES.SUB_ADMIN },
-      TOKEN_EXPIRY
-    );
+    const token = generateToken({ id: admin.id, email: admin.email, role: admin.role }, TOKEN_EXPIRY);
 
-    await client.setEx(subAdmin.id.toString(), TOKEN_EXPIRY, token);
+    await client.setEx(admin.id.toString(), TOKEN_EXPIRY, "");
 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
       message: "Login successful.",
-      data: { adminId: subAdmin.id, email: subAdmin.email, role: ADMIN_ROLES.SUB_ADMIN, token },
+      data: { adminId: admin.id, email: admin.email, role: admin.role, token },
       err: null
     });
   } catch (error) {
-    console.error("Error in subAdminLogin:", error);
+    console.error("Error in adminLogin:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
@@ -92,5 +89,5 @@ const subAdminLogin = async (req, res) => {
 };
 
 module.exports = {
-  subAdminLogin
+  login
 };

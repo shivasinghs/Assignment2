@@ -1,73 +1,81 @@
-const { Admin } = require("../../../models/index")
-const { BCRYPT, HTTP_STATUS_CODE, ADMIN_ROLES, VALIDATOR} = require("../../../../config/constants")
-const validationRules = require("../../../../config/validationRules")
-const sendEmail = require("../../../helper/mail/send")
-const deleteImage = require("../../../helper/imageHandler/delete")
-const sequelize = require('../../../../config/sequelize')
+const { Admin } = require("../../models/index")
+const { BCRYPT, HTTP_STATUS_CODE, ADMIN_ROLES, VALIDATOR} = require("../../../config/constants")
+const validationRules = require("../../../config/validationRules")
+const sendEmail = require("../../helper/mail/send")
+const deleteImage = require("../../helper/imageHandler/delete")
+const sequelize = require('../../../config/sequelize')
 
 const createSubAdmin = async (req, res) => {
   try {
-    const { name, email, password, gender } = req.body
-    const image = req.file
-    const superAdmin = req.admin
-    const baseUrl = `${req.protocol}://${req.get("host")}/assets/uploads/`
+    const { name, email, password, gender } = req.body;
+    const image = req.file;
+    const superAdmin = req.admin;
+    const baseUrl = `${req.protocol}://${req.get("host")}/assets/uploads/`;
 
     const validation = new VALIDATOR(req.body, {
       name: validationRules.Admin.name,
       email: validationRules.Admin.email,
       password: validationRules.Admin.password,
       gender: validationRules.Admin.gender
-    })
+    });
 
     if (validation.fails()) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all()
-      })
+        data: "",
+        error: validation.errors.all()
+      });
     }
 
     if (superAdmin.role !== ADMIN_ROLES.SUPER_ADMIN) {
       return res.status(HTTP_STATUS_CODE.FORBIDDEN).json({
         status: HTTP_STATUS_CODE.FORBIDDEN,
-        message: "You do not have permission to perform this action."
-      })
+        message: "You do not have permission to perform this action.",
+        data: "",
+        error: ""
+      });
     }
 
     if (email.toLowerCase() === superAdmin.email.toLowerCase()) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
-        message:
-          "You cannot create a Sub-Admin with the same email as the Super Admin."
-      })
+        message: "You cannot create a Sub-Admin with the same email as the Super Admin.",
+        data: "",
+        error: ""
+      });
     }
 
     const existingAdmin = await Admin.findOne({
-      where: { email , isDeleted: false },
+      where: { email, isDeleted: false },
       attributes: ["id"]
-    })
-    
+    });
+
     if (existingAdmin) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
-        message: "Email already exists."
-      })
+        message: "Email already exists.",
+        data: "",
+        error: ""
+      });
     }
 
-    let imagePath = null
+    let imagePath = null;
     if (image) {
-      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"]
+      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
       if (!allowedTypes.includes(image.mimetype) || image.size > 2 * 1024 * 1024) {
-        deleteImage(image.path)
+        deleteImage(image.path);
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
-          message: "Invalid image. Only PNG, JPEG, JPG allowed & max size 2MB."
-        })
+          message: "Invalid image. Only PNG, JPEG, JPG allowed & max size 2MB.",
+          data: "",
+          error: ""
+        });
       }
-      imagePath = baseUrl + image.filename
+      imagePath = baseUrl + image.filename;
     }
 
-    const hashedPassword = await BCRYPT.hash(password, 10)
+    const hashedPassword = await BCRYPT.hash(password, 10);
     const newSubAdmin = await Admin.create({
       name,
       email,
@@ -76,7 +84,7 @@ const createSubAdmin = async (req, res) => {
       image: imagePath,
       role: ADMIN_ROLES.SUB_ADMIN,
       createdBy: superAdmin.id
-    })
+    });
 
     await sendEmail(
       process.env.EMAIL_FROM,
@@ -88,24 +96,26 @@ const createSubAdmin = async (req, res) => {
         email: newSubAdmin.email,
         password
       }
-    )
+    );
 
     return res.status(HTTP_STATUS_CODE.CREATED).json({
       status: HTTP_STATUS_CODE.CREATED,
       message: "Sub-Admin created successfully.",
       data: {
-        SubAdminId: newSubAdmin.id
-      }
-    })
+        subAdminId: newSubAdmin.id
+      },
+      error: ""
+    });
   } catch (error) {
-    console.error("Error in createSubAdmin:", error)
+    console.error("Error in createSubAdmin:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message
-    })
+      data: "",
+      error: error.message
+    });
   }
-}
+};
 
 const getSubAdminById = async (req, res) => {
   try {
@@ -120,6 +130,7 @@ const getSubAdminById = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
+        data : "",
         err: validation.errors.all(),
       });
     }
@@ -166,7 +177,7 @@ const getSubAdminById = async (req, res) => {
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
       data: error.message,
-      err: error,
+      error: error,
     });
   }
 };
@@ -189,7 +200,8 @@ const updateSubAdmin = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data: "",
+        error: validation.errors.all(),
       });
     }
 
@@ -197,6 +209,8 @@ const updateSubAdmin = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.FORBIDDEN).json({
         status: HTTP_STATUS_CODE.FORBIDDEN,
         message: "You do not have permission to update a Sub-Admin.",
+        data: "",
+        error: "",
       });
     }
 
@@ -204,6 +218,8 @@ const updateSubAdmin = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Sub-Admin email cannot be the same as Super Admin's email.",
+        data: "",
+        error: "",
       });
     }
 
@@ -216,6 +232,8 @@ const updateSubAdmin = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Active Sub-Admin not found or has been deleted.",
+        data: "",
+        error: "",
       });
     }
 
@@ -228,6 +246,8 @@ const updateSubAdmin = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Invalid image. Only PNG, JPEG, JPG allowed & max size 2MB.",
+          data: "",
+          error: "",
         });
       }
 
@@ -255,13 +275,15 @@ const updateSubAdmin = async (req, res) => {
       status: HTTP_STATUS_CODE.OK,
       message: "Sub-Admin updated successfully.",
       data: { subAdminId },
+      error: "",
     });
   } catch (error) {
     console.error("Error in updateSubAdmin:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data: "",
+      error: error.message,
     });
   }
 };
@@ -279,7 +301,8 @@ const toggleSubAdminStatus = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data: "",
+        error: validation.errors.all(),
       });
     }
 
@@ -287,11 +310,13 @@ const toggleSubAdminStatus = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.FORBIDDEN).json({
         status: HTTP_STATUS_CODE.FORBIDDEN,
         message: "You do not have permission to perform this action.",
+        data: "",
+        error: "",
       });
     }
 
     const subAdmin = await Admin.findOne({
-      where: { id: subAdminId, role: ADMIN_ROLES.SUB_ADMIN, isDeleted : false },
+      where: { id: subAdminId, role: ADMIN_ROLES.SUB_ADMIN, isDeleted: false },
       attributes: ["id", "isActive"],
     });
 
@@ -299,33 +324,37 @@ const toggleSubAdminStatus = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Sub-Admin not found.",
+        data: "",
+        error: "",
       });
     }
 
     subAdmin.isActive = !subAdmin.isActive;
-    subAdmin.updatedAt = Math.floor(Date.now() / 1000),
-    subAdmin.updatedBy = superAdmin.id,
+    subAdmin.updatedAt = Math.floor(Date.now() / 1000);
+    subAdmin.updatedBy = superAdmin.id;
     await subAdmin.save();
 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
       message: `Sub-Admin ${subAdmin.isActive ? "activated" : "deactivated"} successfully.`,
       data: { subAdminId, isActive: subAdmin.isActive },
+      error: "",
     });
   } catch (error) {
     console.error("Error in toggleSubAdminStatus:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      data: error.message,
+      data: "",
+      error: error.message,
     });
   }
 };
 
 const deleteSubAdmin = async (req, res) => {
   try {
-    const { subAdminId } = req.params
-    const superAdmin = req.admin 
+    const { subAdminId } = req.params;
+    const superAdmin = req.admin;
 
     const validation = new VALIDATOR(req.params, {
       subAdminId: validationRules.Admin.id,
@@ -335,7 +364,8 @@ const deleteSubAdmin = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data: "",
+        error: validation.errors.all(),
       });
     }
 
@@ -344,45 +374,46 @@ const deleteSubAdmin = async (req, res) => {
         status: HTTP_STATUS_CODE.FORBIDDEN,
         message: "You do not have permission to perform this action.",
         data: "",
-        err: null
-      })
+        error: "",
+      });
     }
-  
+
     const subAdmin = await Admin.findOne({
-      where: { id : subAdminId, role: ADMIN_ROLES.SUB_ADMIN, isDeleted : false },
-      attributes : ['id']
-    })
+      where: { id: subAdminId, role: ADMIN_ROLES.SUB_ADMIN, isDeleted: false },
+      attributes: ["id"],
+    });
 
     if (!subAdmin) {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "Sub-Admin not found.",
         data: "",
-        err: null
-      })
+        error: "",
+      });
     }
 
-    subAdmin.isDeleted = true
-    subAdmin.deletedAt = Math.floor(Date.now() / 1000)
-    subAdmin.deletedBy = superAdmin.id,
-    await subAdmin.save()
+    subAdmin.isDeleted = true;
+    subAdmin.deletedAt = Math.floor(Date.now() / 1000);
+    subAdmin.deletedBy = superAdmin.id;
+    await subAdmin.save();
 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
       message: "Sub-Admin deleted successfully.",
-      data: {subAdminId: subAdminId},
-      err: null
-    })
+      data: { subAdminId },
+      error: "",
+    });
   } catch (error) {
-    console.error("Error in deleteSubAdmin:", error)
+    console.error("Error in deleteSubAdmin:", error);
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      data: error.message,
-      err: error
-    })
+      data: "",
+      error: error.message,
+    });
   }
-}
+};
+
 
 module.exports = {
   createSubAdmin,

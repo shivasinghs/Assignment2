@@ -21,7 +21,8 @@ const updateEmployee = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Invalid input.",
-          err: validation.errors.all(),
+          data : "",
+          error: validation.errors.all(),
         });
       }
 
@@ -34,6 +35,8 @@ const updateEmployee = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
           status: HTTP_STATUS_CODE.NOT_FOUND,
           message: "Employee not found or has been deleted.",
+          data : "",
+          error: ""
         });
       }
  
@@ -46,6 +49,8 @@ const updateEmployee = async (req, res) => {
           return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
             status: HTTP_STATUS_CODE.BAD_REQUEST,
             message: "Invalid image. Only PNG, JPEG, JPG allowed & max size 2MB.",
+            data : "",
+            error: ""
           });
         }
 
@@ -73,13 +78,15 @@ const updateEmployee = async (req, res) => {
         status: HTTP_STATUS_CODE.OK,
         message: "Employee details updated successfully.",
         data: { employeeId: employee.id },
+        error: ""
       });
     } catch (error) {
       console.error("Error in updateEmployee:", error);
       return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
         status: HTTP_STATUS_CODE.SERVER_ERROR,
         message: "Internal server error.",
-        err: error.message,
+        data : "",
+        error: error.message,
       });
     }
   };
@@ -101,6 +108,8 @@ const updateEmployee = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
           status: HTTP_STATUS_CODE.NOT_FOUND,
           message: "Employee not found or has been deleted.",
+          data : "",
+          error: ""
         });
       }
   
@@ -110,13 +119,15 @@ const updateEmployee = async (req, res) => {
         data: {
          employee 
         },
+        error : ""
       });
     } catch (error) {
       console.error("Error in getEmployee:", error);
       return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
         status: HTTP_STATUS_CODE.SERVER_ERROR,
         message: "Internal server error.",
-        err: error.message,
+        data : "",
+        error: error.message,
       });
     }
   };

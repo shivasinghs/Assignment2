@@ -101,7 +101,7 @@ const getCategoryById = async (req, res) => {
   
       const category = await Category.findOne({
         where: { id: categoryId, isDeleted: false, isActive: true },
-        attributes: ["name", "description", "itemTypeId", "createdBy", "logo"],
+        attributes: ["name", "description", "itemTypeId","logo"],
       });
   
       if (!category) {
@@ -152,6 +152,20 @@ const updateCategory = async (req, res) => {
         });
       }
 
+      const category = await Category.findOne({
+        where: { id: categoryId, isDeleted: false },
+        attributes: ["id", "logo"]
+      });
+  
+      if (!category) {
+        return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
+          status: HTTP_STATUS_CODE.NOT_FOUND,
+          message: "Category not found.",
+          data : "",
+          error: null
+        });
+      }
+      
       const existingCategory = await Category.findOne({
         where: {
           name: { [Op.iLike]: name },
@@ -167,20 +181,6 @@ const updateCategory = async (req, res) => {
           message: "Category with this name already exists.",
           data : "",
           error : "",
-        });
-      }
-  
-      const category = await Category.findOne({
-        where: { id: categoryId, isDeleted: false },
-        attributes: ["id", "logo"]
-      });
-  
-      if (!category) {
-        return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
-          status: HTTP_STATUS_CODE.NOT_FOUND,
-          message: "Category not found.",
-          data : "",
-          error: null
         });
       }
   
@@ -293,8 +293,8 @@ const deleteCategory = async (req, res) => {
 
 const getAllCategories = async (req, res) => {
     try {
-      const page = parseInt(req.query.page, 10) || 1;
-      const pageSize = parseInt(req.query.limit, 10) || 10;
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * pageSize;
   
       const query = `
@@ -305,27 +305,18 @@ const getAllCategories = async (req, res) => {
         LIMIT :limit OFFSET :offset
       `;
   
-      const categories = await sequelize.query(query, {
-        replacements: { limit: pageSize, offset },
-        type: sequelize.QueryTypes.SELECT,
-        raw: true,
-      });
-  
-      if (categories.length === 0) {
-        return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
-          status: HTTP_STATUS_CODE.NOT_FOUND,
-          message: "No Categories found.",
-          data: [],
-          error: null,
-        });
-      }
-  
       const countQuery = `
         SELECT COUNT(*) AS totalCategories
         FROM category
         WHERE is_deleted = false
       `;
   
+      const categories = await sequelize.query(query, {
+        replacements: { limit: pageSize, offset },
+        type: sequelize.QueryTypes.SELECT,
+        raw: true,
+      });
+
       const countResult = await sequelize.query(countQuery, {
         type: sequelize.QueryTypes.SELECT,
         raw: true,

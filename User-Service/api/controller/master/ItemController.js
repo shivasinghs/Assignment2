@@ -23,7 +23,8 @@ const createItem = async (req, res) => {
             return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
                 status: HTTP_STATUS_CODE.BAD_REQUEST,
                 message: "Invalid input.",
-                err: validation.errors.all()
+                data : "",
+                error: validation.errors.all()
             });
         }
 
@@ -36,6 +37,8 @@ const createItem = async (req, res) => {
             return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
                 status: HTTP_STATUS_CODE.BAD_REQUEST,
                 message: "Item with this name already exists in your company.",
+                data : "",
+                error: ""
             });
         }
 
@@ -46,7 +49,9 @@ const createItem = async (req, res) => {
                 deleteImage(image.path);
                 return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
                     status: HTTP_STATUS_CODE.BAD_REQUEST,
-                    message: "Invalid image. Only PNG, JPEG, JPG allowed & max size 2MB."
+                    message: "Invalid image. Only PNG, JPEG, JPG allowed & max size 2MB.",
+                    data : "",
+                error: ""
                 });
             }
             imagePath = baseUrl + image.filename;
@@ -67,14 +72,16 @@ const createItem = async (req, res) => {
             message: "Item created successfully.",
             data: {
                 itemId: newItem.id
-            }
+            },
+            error : ""
         });
     } catch (error) {
         console.error("Error in createItem:", error);
         return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
             status: HTTP_STATUS_CODE.SERVER_ERROR,
             message: "Internal server error.",
-            err: error.message
+            data : "",
+            error: error.message
         });
     }
 };
@@ -163,7 +170,8 @@ const updateItem = async (req, res) => {
             return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
                 status: HTTP_STATUS_CODE.BAD_REQUEST,
                 message: "Invalid input.",
-                err: validation.errors.all()
+                data : "",
+                error: validation.errors.all()
             });
         }
 
@@ -172,7 +180,6 @@ const updateItem = async (req, res) => {
                 name: { [Op.iLike]: name },
                 id: { [Op.ne]: itemId },
                 isDeleted: false,
-                isActive : true,
                 companyId: user.companyId
             },
             attributes: ["id"],
@@ -182,6 +189,8 @@ const updateItem = async (req, res) => {
             return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
                 status: HTTP_STATUS_CODE.BAD_REQUEST,
                 message: "Item with this name already exists in your company.",
+                data : "",
+                error:""
             });
         }
 
@@ -194,6 +203,8 @@ const updateItem = async (req, res) => {
             return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
                 status: HTTP_STATUS_CODE.NOT_FOUND,
                 message: "Item not found in your company.",
+                data : "",
+                error: ""
             });
         }
 
@@ -205,7 +216,9 @@ const updateItem = async (req, res) => {
                 deleteImage(image.path);
                 return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
                     status: HTTP_STATUS_CODE.BAD_REQUEST,
-                    message: "Invalid image. Only PNG, JPEG, JPG allowed & max size 2MB."
+                    message: "Invalid image. Only PNG, JPEG, JPG allowed & max size 2MB.",
+                    data : "",
+                    error: ""
                 });
             }
         
@@ -233,14 +246,16 @@ const updateItem = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.OK).json({
             status: HTTP_STATUS_CODE.OK,
             message: "Item updated successfully.",
-            data: { itemId }
+            data: { itemId },
+            error : ""
         });
     } catch (error) {
         console.error("Error in updateItem:", error);
         return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
             status: HTTP_STATUS_CODE.SERVER_ERROR,
             message: "Internal server error.",
-            err: error.message
+            data : "",
+            error: error.message
         });
     }
 };
@@ -258,7 +273,8 @@ const deleteItem = async (req, res) => {
             return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
                 status: HTTP_STATUS_CODE.BAD_REQUEST,
                 message: "Invalid input.",
-                err: validation.errors.all(),
+                data : "",
+                error: validation.errors.all(),
             });
         }
 
@@ -271,6 +287,8 @@ const deleteItem = async (req, res) => {
             return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
                 status: HTTP_STATUS_CODE.NOT_FOUND,
                 message: "Item not found in your company.",
+                data : "",
+                error: ""
             });
         }
 
@@ -283,13 +301,16 @@ const deleteItem = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.OK).json({
             status: HTTP_STATUS_CODE.OK,
             message: "Item deleted successfully.",
+            data : "",
+            error: ""
         });
     } catch (error) {
         console.error("Error in deleteItem:", error);
         return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
             status: HTTP_STATUS_CODE.SERVER_ERROR,
             message: "Internal server error.",
-            err: error.message,
+            data : "",
+            error: error.message,
         });
     }
 };

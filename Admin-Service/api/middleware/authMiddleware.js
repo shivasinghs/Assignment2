@@ -1,8 +1,7 @@
 const { Admin } = require("../models/index");
 const { HTTP_STATUS_CODE, JWT } = require("../../config/constants");
-const client = require("../../config/redis");
 
-const authenticateUser = async (req, res, next) => {
+const authenticateAdmin = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     
@@ -21,16 +20,6 @@ const authenticateUser = async (req, res, next) => {
         msg: "Invalid or expired token.",
         data: "Token is missing or malformed.",
         err: "",
-      });
-    }
-
-    const storedToken = await client.get(decoded.id.toString());
-
-    if (!storedToken || storedToken !== token) {
-      return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({
-        msg: "Session expired or invalid token. Please login again.",
-        data: null,
-        err: null,
       });
     }
 
@@ -59,4 +48,4 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
-module.exports = authenticateUser;
+module.exports = authenticateAdmin;

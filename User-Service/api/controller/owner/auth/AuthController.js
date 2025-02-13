@@ -1,5 +1,5 @@
 const { User, Company } = require("../../../models/index");
-const { BCRYPT, JWT, HTTP_STATUS_CODE,VALIDATOR,uuidv4 ,TOKEN_EXPIRY,USER_ROLES} = require("../../../../config/constants");
+const { BCRYPT, JWT, HTTP_STATUS_CODE,VALIDATOR,uuidv4 ,TOKEN_EXPIRY,TOKEN_EXPIRY_DAY,USER_ROLES} = require("../../../../config/constants");
 const validationRules = require("../../../../config/validationRules");
 const sendEmail = require("../../../helper/mail/send")
 const generateJWTToken = require("../../../helper/auth/generateJWTToken")
@@ -25,9 +25,10 @@ const signup = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
+        data : "",
         errors: validation.errors.all(),
       });
-    }``
+    }
 
     const existingUser = await User.findOne({ where: { email, isDeleted: false },
       attributes : ['id']
@@ -36,6 +37,8 @@ const signup = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Email already exists.",
+        data : "",
+        error : ""
       });
     }
 
@@ -47,6 +50,8 @@ const signup = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Company name already exists.",
+        data : "",
+        error : ""
       });
     }
 
@@ -54,7 +59,7 @@ const signup = async (req, res) => {
 
     const userId = uuidv4();
 
-    const verificationToken = generateJWTToken({ userId }, "24h");
+    const verificationToken = generateJWTToken({ userId }, TOKEN_EXPIRY_DAY);
 
     await sequelize.transaction(async (transaction) => {
 
@@ -97,6 +102,7 @@ const signup = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
+      data : "",
       error: error.message,
     });
   }
@@ -108,7 +114,9 @@ const verifyAccount = async (req, res) => {
     if (!token) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
-        message: "Verification token is required."
+        message: "Verification token is required.",
+        data : "",
+        error : ""
       });
     }
 
@@ -118,7 +126,9 @@ const verifyAccount = async (req, res) => {
     } catch (err) {
       return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({
         status: HTTP_STATUS_CODE.UNAUTHORIZED,
-        message: "Invalid or expired verification token."
+        message: "Invalid or expired verification token.",
+        data : "",
+        error : ""
       });
     }
 
@@ -130,14 +140,18 @@ const verifyAccount = async (req, res) => {
     if (!user) {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
-        message: "User not found."
+        message: "User not found.",
+        data : "",
+        error : ""
       });
     }
 
     if (user.isVerified) {
       return res.status(HTTP_STATUS_CODE.OK).json({
         status: HTTP_STATUS_CODE.OK,
-        message: "Your account is already verified."
+        message: "Your account is already verified.",
+        data : "",
+        error : ""
       });
     }
 
@@ -145,7 +159,9 @@ const verifyAccount = async (req, res) => {
 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
-      message: "Account successfully verified. You can now log in."
+      message: "Account successfully verified. You can now log in.",
+      data : "",
+      error : ""
     });
 
   } catch (error) {
@@ -153,6 +169,7 @@ const verifyAccount = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
+      data : "",
       err: error.message
     });
   }
@@ -171,7 +188,8 @@ const login = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all()
+        data : "",
+        error: validation.errors.all()
       });
     }
 
@@ -183,21 +201,27 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({
         status: HTTP_STATUS_CODE.UNAUTHORIZED,
-        message: "Invalid email or password."
+        message: "Invalid email or password.",
+        data : "",
+        error : ""
       });
     }
 
     if (!user.isVerified) {
       return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({
         status: HTTP_STATUS_CODE.UNAUTHORIZED,
-        message: "Account not verified. Please check your email."
+        message: "Account not verified. Please check your email.",
+        data : "",
+        error : ""
       });
     }
 
     if (!user.isActive) {
       return res.status(HTTP_STATUS_CODE.FORBIDDEN).json({
         status: HTTP_STATUS_CODE.FORBIDDEN,
-        message: "Account is deactivated. Contact support."
+        message: "Account is deactivated. Contact support.",
+        data : "",
+        error : ""
       });
     }
 
@@ -206,7 +230,9 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({
         status: HTTP_STATUS_CODE.UNAUTHORIZED,
-        message: "Invalid email or password."
+        message: "Invalid email or password.",
+        data : "",
+        error : ""
       });
     }
     const token = generateJWTToken({ id: user.id, email }, TOKEN_EXPIRY);
@@ -229,7 +255,8 @@ const login = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message
+      data : "",
+      error: error.message
     });
   }
 };
@@ -245,7 +272,8 @@ const forgotPassword = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data : "",
+        error: validation.errors.all(),
       });
     }
 
@@ -255,6 +283,8 @@ const forgotPassword = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "User not found.",
+        data : "",
+        error : ""
       });
     }
 
@@ -273,6 +303,8 @@ const forgotPassword = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
       message: "OTP sent successfully. It expires in 5 minutes.",
+      data : "",
+      error : ""
     });
 
   } catch (error) {
@@ -280,7 +312,8 @@ const forgotPassword = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data : "",
+      error: error.message,
     });
   }
 };
@@ -298,7 +331,8 @@ const resetPassword = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid input.",
-        err: validation.errors.all(),
+        data : "",
+        error: validation.errors.all(),
       });
     }
 
@@ -316,7 +350,8 @@ const resetPassword = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
         status: HTTP_STATUS_CODE.NOT_FOUND,
         message: "User not found.",
-        err: null,
+        data : "",
+        error: null,
       });
     }
 
@@ -324,6 +359,7 @@ const resetPassword = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "Invalid OTP.",
+        data : "",
         err: null,
       });
     }
@@ -332,6 +368,7 @@ const resetPassword = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
         message: "OTP has expired.",
+        data : "",
         err: null,
       });
     }
@@ -348,6 +385,8 @@ const resetPassword = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
       message: "Password reset successful. You can now log in with your new password.",
+      data : "",
+      error : "",
     });
 
   } catch (error) {
@@ -355,7 +394,8 @@ const resetPassword = async (req, res) => {
     return res.status(HTTP_STATUS_CODE.SERVER_ERROR).json({
       status: HTTP_STATUS_CODE.SERVER_ERROR,
       message: "Internal server error.",
-      err: error.message,
+      data : "",
+      error: error.message,
     });
   }
 };

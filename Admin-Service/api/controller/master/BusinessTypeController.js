@@ -75,7 +75,7 @@ const getBusinessTypeById = async (req, res) => {
 
     const businessType = await BusinessType.findOne({
       where: { id: businessTypeId, isDeleted: false ,isActive : true},
-      attributes : ["name","created_by"]
+      attributes : ["name"]
     });
 
     if (!businessType) {
@@ -123,6 +123,20 @@ const updateBusinessType = async (req, res) => {
         });
       }
 
+      const businessType = await BusinessType.findOne({
+        where: { id: businessTypeId, isDeleted: false },
+        attributes: ["id"],
+      });
+  
+      if (!businessType) {
+        return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
+          status: HTTP_STATUS_CODE.NOT_FOUND,
+          message: "Business Type not found.",
+          data : "",
+          error : ""
+        });
+      }
+
       const existingBusinessType = await BusinessType.findOne({
         where: {
           name: { [Op.iLike]: name }, 
@@ -136,20 +150,6 @@ const updateBusinessType = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
           status: HTTP_STATUS_CODE.BAD_REQUEST,
           message: "Business Type with this name already exists.",
-          data : "",
-          error : ""
-        });
-      }
-
-      const businessType = await BusinessType.findOne({
-        where: { id: businessTypeId, isDeleted: false },
-        attributes: ["id"],
-      });
-  
-      if (!businessType) {
-        return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
-          status: HTTP_STATUS_CODE.NOT_FOUND,
-          message: "Business Type not found.",
           data : "",
           error : ""
         });
@@ -236,8 +236,8 @@ const deleteBusinessType = async (req, res) => {
 
 const getAllBusinessTypes = async (req, res) => {
     try {  
-      const page = parseInt(req.query.page, 10) || 1;
-      const pageSize = parseInt(req.query.limit, 10) || 10;
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * pageSize;
   
       const query = `
@@ -248,27 +248,18 @@ const getAllBusinessTypes = async (req, res) => {
         LIMIT :limit OFFSET :offset
       `;
   
+      const countQuery = `
+        SELECT COUNT(id) AS totalBusinessTypes
+        FROM business_type
+        WHERE is_deleted = false
+      `;
+  
       const businessTypes = await sequelize.query(query, {
         replacements: { limit: pageSize, offset },
         type: sequelize.QueryTypes.SELECT,
         raw: true,
       });
-  
-      if (businessTypes.length === 0) {
-        return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
-          status: HTTP_STATUS_CODE.NOT_FOUND,
-          message: "No Business Types found.",
-          data: [],
-          error: null,
-        });
-      }
-  
-      const countQuery = `
-        SELECT COUNT(*) AS totalBusinessTypes
-        FROM business_type
-        WHERE is_deleted = false
-      `;
-  
+
       const countResult = await sequelize.query(countQuery, {
         type: sequelize.QueryTypes.SELECT,
         raw: true,
@@ -279,10 +270,8 @@ const getAllBusinessTypes = async (req, res) => {
       return res.status(HTTP_STATUS_CODE.OK).json({
         status: HTTP_STATUS_CODE.OK,
         message: "Business Types retrieved successfully.",
-        data: {
-          total: totalBusinessTypes,
-          businessTypes,
-        },
+        total: totalBusinessTypes,
+        data: { businessTypes},
         error: null,
       });
     } catch (error) {

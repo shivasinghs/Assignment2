@@ -9,30 +9,30 @@ const bootstrap = async () => {
       attributes: ["id"],
     });
 
-    if (existingAdmin) {
-      return; 
+    if (!existingAdmin) {
+      const data = {
+        name: "shiva",
+        email: "shiva1234@gmail.com",
+        password: "Shiva@1234",
+        gender : "Male",
+        role: ADMIN_ROLES.SUPER_ADMIN,
+      };
+  
+      const hashedPassword = await BCRYPT.hash(data.password, 10);
+  
+      await Admin.create({
+        id: uuidv4(),
+        name: data.name,
+        email: data.email,
+        password: hashedPassword,
+        gender: data.gender,
+        role: data.role,
+        isActive: true,
+        createdAt: Math.floor(Date.now() / 1000),
+      });
     }
-
-    const data = {
-      name: "shiva",
-      email: "shiva1234@gmail.com",
-      password: "Shiva@1234",
-      gender : "Male",
-      role: ADMIN_ROLES.SUPER_ADMIN,
-    };
-
-    const hashedPassword = await BCRYPT.hash(data.password, 10);
-
-    await Admin.create({
-      id: uuidv4(),
-      name: data.name,
-      email: data.email,
-      password: hashedPassword,
-      gender: data.gender,
-      role: data.role,
-      isActive: true,
-      createdAt: Math.floor(Date.now() / 1000),
-    });
+    
+    return true;
 
   } catch (error) {
     console.error("Error in bootstrap:", error.message);

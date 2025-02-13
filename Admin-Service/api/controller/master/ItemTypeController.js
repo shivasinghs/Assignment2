@@ -78,7 +78,7 @@ const getItemTypeById = async (req, res) => {
 
     const itemType = await ItemType.findOne({
       where: { id: itemTypeId, isDeleted: false, isActive: true },
-      attributes: ["name", "description", "createdBy"],
+      attributes: ["name", "description"],
     });
 
     if (!itemType) {
@@ -127,6 +127,20 @@ const updateItemType = async (req, res) => {
       });
     }
 
+    const itemType = await ItemType.findOne({
+      where: { id: itemTypeId, isDeleted: false },
+      attributes: ["id"],
+    });
+
+    if (!itemType) {
+      return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
+        status: HTTP_STATUS_CODE.NOT_FOUND,
+        message: "Item Type not found.",
+        data : "",
+        error : ""
+      });
+    }
+
     const existingItemType = await ItemType.findOne({
         where: {
           name: { [Op.iLike]: name }, 
@@ -144,20 +158,6 @@ const updateItemType = async (req, res) => {
           error : ""
         });
       }
-
-    const itemType = await ItemType.findOne({
-      where: { id: itemTypeId, isDeleted: false },
-      attributes: ["id"],
-    });
-
-    if (!itemType) {
-      return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
-        status: HTTP_STATUS_CODE.NOT_FOUND,
-        message: "Item Type not found.",
-        data : "",
-        error : ""
-      });
-    }
 
     await itemType.update({ 
         name, 
@@ -240,8 +240,8 @@ const deleteItemType = async (req, res) => {
 
 const getAllItemTypes = async (req, res) => {
     try {
-        const page = parseInt(req.query.page, 10) || 1;
-        const pageSize = parseInt(req.query.limit, 10) || 10;
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * pageSize;
 
         const query = `
@@ -252,26 +252,17 @@ const getAllItemTypes = async (req, res) => {
             LIMIT :limit OFFSET :offset
         `;
 
-        const itemTypes = await sequelize.query(query, {
-            replacements: { limit: pageSize, offset },
-            type: sequelize.QueryTypes.SELECT,
-            raw: true,
-        });
-
-        if (itemTypes.length === 0) {
-            return res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
-                status: HTTP_STATUS_CODE.NOT_FOUND,
-                message: "No Item Types found.",
-                data: [],
-                error: null,
-            });
-        }
-
         const countQuery = `
             SELECT COUNT(*) AS totalItemTypes
             FROM item_type
             WHERE is_deleted = false
         `;
+
+        const itemTypes = await sequelize.query(query, {
+          replacements: { limit: pageSize, offset },
+          type: sequelize.QueryTypes.SELECT,
+          raw: true,
+        });
 
         const countResult = await sequelize.query(countQuery, {
             type: sequelize.QueryTypes.SELECT,
@@ -283,10 +274,8 @@ const getAllItemTypes = async (req, res) => {
         return res.status(HTTP_STATUS_CODE.OK).json({
             status: HTTP_STATUS_CODE.OK,
             message: "Item Types retrieved successfully.",
-            data: {
-                total: totalItemTypes,
-                itemTypes,
-            },
+            total: totalItemTypes,
+            data: { itemTypes},
             error: null,
         });
     } catch (error) {

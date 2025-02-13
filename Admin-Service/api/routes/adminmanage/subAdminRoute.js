@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const SubAdminController = require("../../../controller/superAdmin/master/SubAdminController");
-const authMiddleware = require("../../../middleware/authMiddleware");
-const { upload } = require("../../../../config/multer");
+const SubAdminController = require("../../controller/adminmanage/SubAdminController");
+const authMiddleware = require("../../middleware/authMiddleware");
+const { upload } = require("../../../config/multer");
 
 router.post("/create", authMiddleware, upload.single("image"), SubAdminController.createSubAdmin);
 router.get("/get/:subAdminId", authMiddleware, SubAdminController.getSubAdminById);

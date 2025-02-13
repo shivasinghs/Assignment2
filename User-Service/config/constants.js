@@ -22,6 +22,8 @@ const HTTP_STATUS_CODE = {
 
 const TOKEN_EXPIRY = 60 * 60;
 
+const TOKEN_EXPIRY_DAY = 24 * 60* 60;
+
 const USER_ROLES = {
   OWNER: "owner",
   EMPLOYEE: "employee"
@@ -35,6 +37,7 @@ module.exports = {
   Op,
   HTTP_STATUS_CODE,
   TOKEN_EXPIRY,
+  TOKEN_EXPIRY_DAY,
   PATH,
   FS,
   MULTER,
