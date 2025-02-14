@@ -4,11 +4,13 @@ const { BCRYPT, uuidv4, ADMIN_ROLES } = require("./constants");
 
 const bootstrap = async () => {
   try {
+    //checking for existing  admin in database 
     const existingAdmin = await Admin.findOne({
       where: { isDeleted: false },
       attributes: ["id"],
     });
 
+    //if admin is not there in database admin is created
     if (!existingAdmin) {
       const data = {
         name: "shiva",
@@ -18,8 +20,11 @@ const bootstrap = async () => {
         role: ADMIN_ROLES.SUPER_ADMIN,
       };
   
+      //Encrypting the password 
       const hashedPassword = await BCRYPT.hash(data.password, 10);
   
+      //creating admin in database 
+      
       await Admin.create({
         id: uuidv4(),
         name: data.name,

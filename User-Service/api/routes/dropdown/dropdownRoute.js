@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const DropdownController = require("../../controller/master/DropdownController");
+const DropdownController = require("../../controller/dropdown/DropdownController");
 const authMiddleware = require("../../middleware/authMiddleware");
 
 router.get("/get-all-business-type", authMiddleware,DropdownController.getAllBusinessTypes );

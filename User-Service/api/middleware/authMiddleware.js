@@ -1,11 +1,14 @@
 const { User } = require("../models/index");
 const { HTTP_STATUS_CODE, JWT } = require("../../config/constants");
-const client = require("../../config/redis");
+
+// Middleware to authenticate an user using a JWT token.
 
 const authenticateUser = async (req, res, next) => {
   try {
+    // Extract the token from the Authorization header
     const token = req.header("Authorization")?.replace("Bearer ", "");
 
+    //Check for token is provided or not 
     if (!token) {
       return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({
         status: HTTP_STATUS_CODE.UNAUTHORIZED,
@@ -15,24 +18,16 @@ const authenticateUser = async (req, res, next) => {
       });
     }
 
+    // Verify and decode the token
     const decoded = JWT.verify(token, process.env.JWT_SECRET);
-    
-    const storedToken = await client.get(decoded.id.toString());
 
-    if (!storedToken || storedToken !== token) {
-      return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({
-        status: HTTP_STATUS_CODE.UNAUTHORIZED,
-        message: "Session expired or invalid token. Please login again.",
-        data: null,
-        error: null,
-      });
-    }
-
+     // Find the user in the database with active status
     const user = await User.findOne({ 
       where: { id: decoded.id, isDeleted: false, isActive : true },
       attributes: ["id", "role", "email", "companyId"]
     });
 
+    //Return response if user not found in database 
     if (!user) {
       return res.status(HTTP_STATUS_CODE.UNAUTHORIZED).json({
         status: HTTP_STATUS_CODE.UNAUTHORIZED,
@@ -42,6 +37,7 @@ const authenticateUser = async (req, res, next) => {
       });
     }
 
+    // Attach user  details to the request object
     req.user = user;
     next();
   } catch (error) {

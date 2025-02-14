@@ -1,26 +1,30 @@
-const PATH = require('path');
+const { MAIL_TYPES, PATH } = require("../../../config/constants");
+/**
+ Processes the email message configuration based on the type.
+ type - The type of email to be sent.
+ */
 
 const processMessage = (type) => {
-  let subject = '';
-  let attachments = [];
+  let subject = ''; // Default subject
+  let attachments = []; // Default attachments array
 
   switch (type) {
-    case 'account-verification':
+    case MAIL_TYPES.ACCOUNT_VERIFICATION:
       subject = 'Welcome to our platform!';
       attachments = [];
       break;
 
-    case 'otp-for-resetting-your-password':
+    case MAIL_TYPES.OTP_FOR_RESETTING_YOUR_PASSWORD:
       subject = 'Reset Your Password';
       attachments = [];
       break;
 
-      case 'create-employee':
+      case MAIL_TYPES.CREATE_EMPLOYEE:
       subject = 'You have been added as an Employee ';
       attachments = [];
       break;
 
-      case 'item-count-to-owner':
+      case MAIL_TYPES.ITEM_COUNT_TO_OWNER:
       subject = 'List Of Items Created Today';
       attachments = [];
       break;

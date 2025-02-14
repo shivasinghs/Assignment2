@@ -3,7 +3,6 @@ const router = express.Router()
 const AuthController = require("../../../controller/owner/auth/AuthController")
 
 router.post("/signup", AuthController.signup)
-router.post("/login", AuthController.login)
 router.post("/verify-account",AuthController.verifyAccount);
 router.post("/forgot-password",AuthController.forgotPassword)
 router.post("/reset-password",AuthController.resetPassword)

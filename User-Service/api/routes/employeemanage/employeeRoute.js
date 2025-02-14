@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const EmployeeController = require("../../../controller/owner/master/EmployeeController");
-const authMiddleware = require('../../../middleware/authMiddleware')
-const { upload } = require("../../../../config/multer");
+const EmployeeController = require("../../controller/employeemanage/EmployeeController");
+const authMiddleware = require('../../middleware/authMiddleware')
+const { upload } = require("../../../config/multer");
 
 router.post("/create", authMiddleware, upload.single("image"), EmployeeController.createEmployee);
 router.get("/get/:employeeId", authMiddleware, EmployeeController.getEmployeeById);

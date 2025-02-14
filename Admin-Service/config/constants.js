@@ -8,6 +8,7 @@ const FS = require('fs');
 const MULTER = require('multer')
 const NODEMAILER = require('nodemailer');
 
+// HTTP status codes used in responses
 const HTTP_STATUS_CODE = {
     OK: 200,
     CREATED: 201,
@@ -20,17 +21,30 @@ const HTTP_STATUS_CODE = {
     SERVER_ERROR: 500,
   };
 
-const TOKEN_EXPIRY = 60 * 60;
+// Token expiry durations
+const TOKEN_EXPIRY = 60 * 60; //  3600 seconds (1 Hour)
 
+// Admin roles for access control
 const ADMIN_ROLES = {
   SUPER_ADMIN: "super_admin",
   SUB_ADMIN: "sub_admin"
 };
 
+// User roles for access control
 const USER_ROLES = {
   OWNER: "owner",
   EMPLOYEE: "employee"
 };
+
+// Mail types for different email templates
+MAIL_TYPES = {
+  CREATE_SUB_ADMIN : "create-sub-admin",
+}
+
+// Mail templates used in email notifications
+MAIL_TEMPLATES = {
+  SUB_ADMIN_INVITE : "sub-admin-invite",
+}
 
 module.exports = {
     JWT,
@@ -46,4 +60,6 @@ module.exports = {
     NODEMAILER,
     ADMIN_ROLES,
     USER_ROLES,
+    MAIL_TYPES,
+    MAIL_TEMPLATES,
 };

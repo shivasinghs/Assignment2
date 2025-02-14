@@ -6,13 +6,16 @@ const client = require("../../../config/redis");
 
 const login = async (req, res) => {
   try {
+    // Extract required fields from request body
     const { email, password } = req.body;
 
+    //Validate the request body fields
     const validation = new VALIDATOR(req.body, {
       email: validationRules.Admin.email,
       password: validationRules.Admin.password
     });
 
+    //if validation fails return error
     if (validation.fails()) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
@@ -22,6 +25,7 @@ const login = async (req, res) => {
       });
     }
 
+    //find admin in database with email and select required fields
     const admin = await Admin.findOne({
       where: {
         email: email,
@@ -30,6 +34,7 @@ const login = async (req, res) => {
       attributes: ["id", "password", "role", "isDeleted", "isActive"]
     });
 
+    //if admin not found return a response 
     if (!admin) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
@@ -39,6 +44,7 @@ const login = async (req, res) => {
       });
     }
 
+    //if admin is deleted return a response 
     if (admin.isDeleted) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
@@ -48,6 +54,7 @@ const login = async (req, res) => {
       });
     }
 
+    // If admin is not active return a response 
     if (!admin.isActive) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
@@ -57,7 +64,10 @@ const login = async (req, res) => {
       });
     }
 
+    //Compare the password provide in request body with password stored in database 
     const isPasswordValid = await BCRYPT.compare(password, admin.password);
+
+    //If password is not correct return a response
     if (!isPasswordValid) {
       return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
         status: HTTP_STATUS_CODE.BAD_REQUEST,
@@ -67,10 +77,13 @@ const login = async (req, res) => {
       });
     }
 
+    //Generate a JWT token for authentication
     const token = generateToken({ id: admin.id, email: admin.email, role: admin.role }, TOKEN_EXPIRY);
 
+    //Storing the admin id in Redis Database
     await client.setEx(admin.id.toString(), TOKEN_EXPIRY, "");
 
+    //return a success response 
     return res.status(HTTP_STATUS_CODE.OK).json({
       status: HTTP_STATUS_CODE.OK,
       message: "Login successful.",
